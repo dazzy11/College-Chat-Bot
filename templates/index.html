@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>College Enquiry Chatbot</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="chat-container">
+    <h2>College Enquiry Chatbot</h2>
+    <div id="chatbox">
+        <div id="chat-log"></div>
+    </div>
+    <input type="text" id="user-input" placeholder="Type your message here...">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+    const chatLog = document.getElementById('chat-log');
+    const userInput = document.getElementById('user-input');
+
+    // Function to display messages in the chat log
+    function appendMessage(sender, message) {
+        const messageElement = document.createElement('div');
+        messageElement.className = sender;
+        messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+        chatLog.appendChild(messageElement);
+        chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    // Function to send the user message and get the response
+    async function sendMessage() {
+        const message = userInput.value;
+        if (message.trim() === "") return;
+
+        appendMessage('You', message);
+        userInput.value = '';
+
+        const response = await fetch('/get-response', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: message })
+        });
+        const data = await response.json();
+        appendMessage('Bot', data.response);
+    }
+</script>
+</body>
+</html>
